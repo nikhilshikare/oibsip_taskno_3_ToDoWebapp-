@@ -96,26 +96,98 @@
     }   
 
 
-
-
-    
-
-
     .todo_div {
-        width: 30%;
+        width:100%;
     }
     .main_div{
-        border: 2px solid red;
         display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     .pending_div{
-        border: 2px solid yellow;
-        width: 65%;
-        margin: 1.2rem 0rem 0rem 2.2rem;
-        height: 51vh;
+        width: 100%;
         overflow-y:scroll;
     }
+    .btn-sm{
+        text-decoration:none;
+    }
+
+    @media screen and (min-width: 470px) {
+        .todo_div  {
+            width: 70%;
+        }
+    }
+
+    @media screen and (min-width: 750px) {
+            .todo_div {
+            width: 30%;
+        }
+        .main_div{
+            flex-direction: row;
+        }
+        .pending_div{
+            width: 65%;
+            margin: 1.2rem 0rem 0rem 2.2rem;
+        }
+        .completed_div{
+            width: 80%;
+        }
+    }
+
 </style>
+
+
+<script type="text/javascript">
+        {% if status == 1 %} swal('Success.',"Completed Succesfully..","success")
+        my_timeout = setTimeout(()=>{ clearTimeout(my_timeout);  window.location =  "/";},1400);
+        {% endif %}
+        {% if status == 0  %}swal('Success.',"Something Went Wrong..","error");
+        my_timeout = setTimeout(()=>{ clearTimeout(my_timeout);  window.location =  "/";},1400);
+        {% endif %}
+    function edit_form(id){
+        document.getElementById("edit_save").style.display="block";
+        document.getElementById("save").style.display="none";
+        document.getElementById("todo_id").value=id;
+        document.getElementById("desc").placeholder="Enter New Description..";
+        document.getElementById("title").placeholder="Enter New Title..";
+    }
+
+    
+//  <!-- ----------------scripts for Prevent Form From Reloading & Submittimg The Edit Form------------------- -->
+$(document).on('click', '#edit_save', function (e) {
+    document.getElementById("edit_save").disabled = true;
+    var spinner = '<div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div> Please Wait.'
+    $('#edit_save').html(spinner);
+      e.preventDefault();
+      $.ajax({
+          type: 'POST',
+          url: '/edit_todo',
+          data: {
+              title: $('#title').val(),
+              desc: $('#desc').val(),
+              todo_id: $('#todo_id').val(),
+              csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+          },
+          success: function (data) {
+            if(data=="1"){
+                $('#edit_save').text("Done");
+                swal('Success!!','<b>Changed Succesfully..</b>','success');
+                my_timeout = setTimeout(()=>{ clearTimeout(my_timeout);    window.location =  "/";},1400);
+            }
+            else{
+                $('#edit_save').html("Done");
+                document.getElementById("edit_save").disabled = false;
+                sweetAlert("Error!!", "style='color:red';>Spmething Went Wrong..!", "error");
+            }
+          },
+          error: function (response) {
+              alert('Something Went Wrong...');
+          }
+  
+      });
+  });
+
+</script>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
@@ -133,22 +205,25 @@
         </div>
     </div>
 </nav>
+
+
+
+
 <div class="container-fluid main_div">
 
     <div class="text-center my-2 todo_div" id="todo_edit">
         <div class="card" style="border: 0.1rem solid #38b42d; border-radius: 0.8rem;">
             <div class="card-body py-3 px-md-2">
-                <form id="post-form">
+                <form id="post-form" method="post" action="/add_todo">
                     {% csrf_token %}
                     <!-- 2 column grid layout with text inputs for the first and last names -->
                     <!-- Email input -->
                     <div class="form-outline mb-2">
-                        <input type="text" id="title" class="form-control" placeholder="Title.." required
-                            pattern="[^' ']+" />
+                        <input type="text" name ="title" id="title" class="form-control" placeholder="Title.." required />
                     </div>
 
                     <div class="form-outline mb-3">
-                        <textarea name="desc" id="desc" class="form-control" placeholder="Description.." required
+                        <textarea name="desc" name ="desc" id="desc" class="form-control" placeholder="Description.." required
                             rows="10"></textarea>
                     </div>
                     <div class="form-outline mb-4">
@@ -156,47 +231,65 @@
                     </div>
 
                     <!-- Submit button -->
-                    <button type="submit" id="sign_up" class="container-fluid btn btn-success" style="color:white">
+                    <button type="submit" id="save" class="container-fluid btn btn-success" style="color:white">
                         Save
                     </button>
-
+                    <button type="button" id="edit_save" style="display:none;" class="container-fluid btn btn-success" style="color:white">
+                        Done
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 
+
     <div class="pending_div">
-            <div class='notification-list notification-list--unread profile_list mb-1'>
-                <div class='notification-list_content'>
-                    <div class='notification-list_img'>
-                        <img src='/static/pending.png' alt='user'>
-                    </div>
-                    <div class='notification-list_detail'>
-                        <p><b>Title</b> </p>
-                        <p>Description..</p>         
-                        <p class='text-muted'> <button type="submit" id="sign_up" class="btn-sm btn-warning">edit</button><button type="submit" id="sign_up" class="btn-sm btn-success mx-3 ">Completed</button></small></p>
-                    </div>
-                </div>
-            </div>
 
-            <div class='notification-list notification-list--unread profile_list mb-1'>
-                <div class='notification-list_content'>
-                    <div class='notification-list_img'>
-                        <img src='/static/pending.png' alt='user'>
-                    </div>
-                    <div class='notification-list_detail'>
-                        <p><b>Title</b> </p>
-                        <p>Description..</p>         
-                        <p class='text-muted'> <button type="submit" id="sign_up" class="btn-sm btn-warning">edit</button><button type="submit" id="sign_up" class="btn-sm btn-success mx-3 ">Completed</button></small></p>
+        {% if uncompleted_todo %}
+            {% for i in uncompleted_todo  %}
+                <div class='notification-list notification-list--unread profile_list_disable mb-2'>
+                    <div class='notification-list_content'>
+                        <div class='notification-list_img'>
+                            <img src='/static/pending.png' alt='user'>
+                        </div>
+                        <div class='notification-list_detail'>
+                            <p><b>{{i.title}}</b> ⌚<b class="mx-2">{{i.time}}</b> </p>
+                            <p>{{i.desc}}</p>         
+                            <p class='text-muted'> <button type="button" id="edit" onclick="edit_form({{i.id}})" class="btn-sm btn-warning">edit</button><a href="/add_complete?id={{i.id}}" class="btn-sm btn-success mx-3 ">Done</a><a href="/delete_id?id={{i.id}}" class="btn-sm btn-danger mx-3 ">Delete</a></small></p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endfor %}
+        {% endif %}
+
     </div>
-
-
 </div>
-<div class="container completed_div my-2">
 
+
+<hr style="height: 0.3rem;color: #ff0808;">
+
+
+<div class="container-fluid completed_div my-3">
+
+    {% if completed_todo %}
+    {% for j in completed_todo  %}
+        <div class='notification-list notification-list--unread profile_list mb-1'>
+            <div class='notification-list_content'>
+                <div class='notification-list_img'>
+                    <img src='/static/completed_logo.jpg' alt='user'>
+                </div>
+                <div class='notification-list_detail'>
+                    <p><b>{{j.title}}</b> </p>
+                    <p>{{j.desc}}</p>         
+                    <p class='text-muted'><a href="/delete_id?id={{j.id}}" class="btn-sm btn-danger mx-3 ">Delete</a><b class="mx-1">{{j.time}}</b></small></p>
+                </div>
+                <div class='notification-list_detail mx-2'>
+                    <b>✔ ⌛ {{j.completed_time}}</b>
+                </div>
+            </div> 
+        </div>
+    {% endfor %}
+    {% endif %}
 </div>
 
 {% endblock body %}

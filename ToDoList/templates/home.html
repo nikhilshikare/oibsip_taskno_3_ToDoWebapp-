@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% block title %}Home Html{% endblock title %}
+{% block body %}
+<!-- navbar for home start here -->
+<style>
+     body {
+        font-family: "Roboto", sans-serif;
+        background: white;
+        min-height: 100vh;
+        position: relative;
+    }
+
+    .section-50 {
+        padding: 50px 0;
+    }
+
+    .m-b-50 {
+        margin-bottom: 50px;
+    }
+
+    .dark-link {
+        color: #333;
+    }
+
+    .heading-line {
+        position: relative;
+        padding-bottom: 5px;
+    }
+
+    .heading-line:after {
+        content: "";
+        height: 4px;
+        width: 75px;
+        background-color: #29B6F6;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+
+    .notification-ui_dd-content {
+        margin-bottom: 30px;
+    }
+
+    .notification-list {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 20px;
+        margin-bottom: 7px;
+        background: #fff;
+        -webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    .notification-list--unread {
+        border-left: 2px solid #29B6F6;
+    }
+
+    .notification-list .notification-list_content {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+    }
+
+    .notification-list .notification-list_content .notification-list_img img {
+        height: 48px;
+        width: 48px;
+        border-radius: 50px;
+        margin-right: 20px;
+    }
+
+    .notification-list .notification-list_content .notification-list_detail p {
+        margin-bottom: 5px;
+        line-height: 1.2;
+    }
+
+    .notification-list .notification-list_feature-img img {
+        height: 48px;
+        width: 48px;
+        border-radius: 5px;
+        margin-left: 20px;
+    }
+
+
+    .profile_list_disable {
+        border: 2px solid #31ff00;
+        box-shadow: 3px 5px 10px #ff0808;
+    }
+
+    .profile_list {
+        border: 2px solid #00ff51;
+        box-shadow: 3px 5px 10px #6a00f5;
+    }   
+
+
+
+
+    
+
+
+    .todo_div {
+        width: 30%;
+    }
+    .main_div{
+        border: 2px solid red;
+        display: flex;
+    }
+    .pending_div{
+        border: 2px solid yellow;
+        width: 65%;
+        margin: 1.2rem 0rem 0rem 2.2rem;
+        height: 51vh;
+        overflow-y:scroll;
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand">Hii <b style="color: green;">{{request.user.first_name}}</b>, Welcome To To-Do's </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/sign_out" style="color:#ff2828">Sign-Out</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid main_div">
+
+    <div class="text-center my-2 todo_div" id="todo_edit">
+        <div class="card" style="border: 0.1rem solid #38b42d; border-radius: 0.8rem;">
+            <div class="card-body py-3 px-md-2">
+                <form id="post-form">
+                    {% csrf_token %}
+                    <!-- 2 column grid layout with text inputs for the first and last names -->
+                    <!-- Email input -->
+                    <div class="form-outline mb-2">
+                        <input type="text" id="title" class="form-control" placeholder="Title.." required
+                            pattern="[^' ']+" />
+                    </div>
+
+                    <div class="form-outline mb-3">
+                        <textarea name="desc" id="desc" class="form-control" placeholder="Description.." required
+                            rows="10"></textarea>
+                    </div>
+                    <div class="form-outline mb-4">
+                        <input type="hidden" id="todo_id" class="form-control" value='' />
+                    </div>
+
+                    <!-- Submit button -->
+                    <button type="submit" id="sign_up" class="container-fluid btn btn-success" style="color:white">
+                        Save
+                    </button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="pending_div">
+            <div class='notification-list notification-list--unread profile_list mb-1'>
+                <div class='notification-list_content'>
+                    <div class='notification-list_img'>
+                        <img src='/static/pending.png' alt='user'>
+                    </div>
+                    <div class='notification-list_detail'>
+                        <p><b>Title</b> </p>
+                        <p>Description..</p>         
+                        <p class='text-muted'> <button type="submit" id="sign_up" class="btn-sm btn-warning">edit</button><button type="submit" id="sign_up" class="btn-sm btn-success mx-3 ">Completed</button></small></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class='notification-list notification-list--unread profile_list mb-1'>
+                <div class='notification-list_content'>
+                    <div class='notification-list_img'>
+                        <img src='/static/pending.png' alt='user'>
+                    </div>
+                    <div class='notification-list_detail'>
+                        <p><b>Title</b> </p>
+                        <p>Description..</p>         
+                        <p class='text-muted'> <button type="submit" id="sign_up" class="btn-sm btn-warning">edit</button><button type="submit" id="sign_up" class="btn-sm btn-success mx-3 ">Completed</button></small></p>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+
+</div>
+<div class="container completed_div my-2">
+
+</div>
+
+{% endblock body %}
